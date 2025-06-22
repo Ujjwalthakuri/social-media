@@ -1,25 +1,30 @@
 from django.shortcuts import render
-import io
-from rest_framework.parsers import JSONParser
-from .models import post_Model
+from rest_framework.decorators import api_view
 from .serializer import post_serial
-from rest_framework.renderers import JSONRenderer
-from django.http import HttpResponse
-# Create your views here.
-def postview(request):
-    if request.method == "GET":
-        json_data = request.body
-        stream = io.BytesIO(json_data)
-        py_data = JSONParser().parse(stream)
-        id = py_data.objects.get('id', None)
+from .models import post_Model
+from rest_framework.response import Response
+from rest_framework import status
+
+@api_view(['GET', 'POST', 'PUT', 'PATCH', 'DELETE',])
+def postview(request, pk=None):
+    # for get request
+    if request.method == 'GET':
+        id=pk
         if id is not None:
-            post_id = post_Model.objects.get(id = id)
-            serialize = post_serial(post_id)
-            json_data = JSONRenderer().render(serialize.data)
-            return HttpResponse(json_data)
+            postid = post_Model.objects.get(id=id)
+            serializer = post_serial(postid)
+            return Response (serializer.data)
         post = post_Model.objects.all()
-        serialize = post_serial(post, many=True)
-        json_data = JSONRenderer().render(serialize.data)
-        return HttpResponse(json_data)
-            
-        
+        serializer = post_serial(post, many =True)
+        return Response(serializer.data)
+    
+    # for post request
+    if request.method == 'POST':
+        serializer = post_serial(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            result = {'msg': 'New data has been inserted'}
+            return Response(result, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
