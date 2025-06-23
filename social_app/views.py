@@ -27,4 +27,21 @@ def postview(request, pk=None):
             return Response(result, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+    # for put request
+    if request.method == 'PUT':
+        id = pk
+        postid = post_Model.objects.get(id=id)
+        serializer = post_serial(postid, data=request.data, partial = True)
+        if serializer.is_valid():
+            serializer.save()
+            result = {'msg': "Data has been edited using put method"}
+            return Response(result)
+        return Response(serializer.errors)
+    
+    # for delete request
+    if request.method == 'DELETE':
+        id = pk
+        postid = post_Model.objects.get(id=id)
+        postid.delete()
+        return Response({"msg": "Data has been deleted"})
     

@@ -20,6 +20,6 @@ from social_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('postdetails/', views.postview),
-    path('postdetaildetail/<int:pk>/', views.postview)
+    path('postdetail/', views.postview),
+    path('postdetail/<int:pk>/', views.postview)
 ]
