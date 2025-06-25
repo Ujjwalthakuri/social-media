@@ -15,11 +15,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from social_app import views
+from rest_framework.routers import DefaultRouter
+
+router = DefaultRouter()
+
+router.register("SocialMedia", views.postCRUD, basename='socialMedia')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('postdetail/', views.postview),
-    path('postdetail/<int:pk>/', views.postview)
+    path('', include(router.urls))
 ]
