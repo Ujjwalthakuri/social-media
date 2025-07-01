@@ -1,8 +1,24 @@
-from django.shortcuts import render
-from .serializer import post_serial
-from .models import post_Model
-from rest_framework import viewsets
+from rest_framework import viewsets, permissions
+from .models import Post, Comment, Like, Profile
+from .serializer import PostSerializer, CommentSerializer, ProfileSerializer
 
-class postCRUD(viewsets.ModelViewSet):
-    queryset = post_Model.objects.all()
-    serializer_class = post_serial
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all().order_by('-created')
+    serializer_class = PostSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+
+    def perform_create(self, serializer):
+        serializer.save(author=self.request.user)
+
+class ProfileViewSet(viewsets.ModelViewSet):
+    queryset = Profile.objects.all()
+    serializer_class = ProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]

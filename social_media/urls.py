@@ -21,9 +21,11 @@ from rest_framework.routers import DefaultRouter
 
 router = DefaultRouter()
 
-router.register("SocialMedia", views.postCRUD, basename='socialMedia')
+router.register("SocialMedia-post", views.PostViewSet, basename='post')
+router.register("SocialMedia-comment", views.CommentViewSet, basename='comment')
+router.register("SocialMedia-profile", views.ProfileViewSet, basename='profile')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(router.urls))
+    path('', include(router.urls)),
 ]
